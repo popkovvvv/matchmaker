@@ -1,0 +1,1 @@
+alter table matches add column rank varchar(16);
