@@ -13,19 +13,24 @@ set -a && source .env && set +a
 
 #### Start the Application
 
-with gradlew (without kafka, postgres)
+With gradlew (without kafka, postgres)
 ```
 ./gradlew bootRun --args='--spring.profiles.active=common' -Duser.language=en -Duser.timezone=UTC
 ```
 
-with docker-compose
+With docker-compose
 ```
 docker-compose up
 ```
 
-... or just run
-
-bash
+Or just run
 ```
 ./run-dev.sh
+```
+
+Delete postgres data
+```
+docker-compose down
+rm -rf postgres/data/*
+docker-compose up -d
 ```
