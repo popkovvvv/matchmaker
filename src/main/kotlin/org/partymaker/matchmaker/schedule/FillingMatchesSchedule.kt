@@ -1,47 +1,35 @@
 package org.partymaker.matchmaker.schedule
 
-import mu.KotlinLogging
-import org.partymaker.matchmaker.entity.Rank
-import org.partymaker.matchmaker.entity.match.Match
-import org.partymaker.matchmaker.entity.match.MatchRepository
-import org.partymaker.matchmaker.entity.player.PlayerRepository
-import org.springframework.beans.factory.annotation.Value
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.runBlocking
+import org.partymaker.matchmaker.entity.player.Player
+import org.partymaker.matchmaker.service.usecase.FillingMatchesRequest
+import org.partymaker.matchmaker.service.usecase.FillingMatchesResponse
+import org.partymaker.matchmaker.service.usecase.UseCase
+import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import kotlin.math.ceil
 
 @Service
 class FillingMatchesSchedule(
-    private val playerRepository: PlayerRepository,
-    private val matchRepository: MatchRepository,
-    @Value("\${match.group.size}") private val matchGroupSize: Int,
+    private val objectMapper: ObjectMapper,
+    private val fillingMatchesUseCase: UseCase<FillingMatchesRequest, FillingMatchesResponse>
 ) : Schedule {
 
-    private val logger = KotlinLogging.logger { }
+    private val playerInSearch: MutableList<Player> = mutableListOf()
 
     @Scheduled(fixedRate = 5000)
     override fun run() {
-        val players = playerRepository.findSearchMatchPlayers()
-        val lowSkilledPlayersSize = players.filter { it.rank == Rank.LOW }.size
-        val middleSkilledPlayersSize = players.filter { it.rank == Rank.MIDDLE }.size
-        val highSkilledPlayersSize = players.filter { it.rank == Rank.HIGH }.size
-
-        val lowSkilledMatchesSize = ceil(lowSkilledPlayersSize.toDouble() / matchGroupSize.toDouble()).toInt()
-        val middleSkilledMatchesSize = ceil(middleSkilledPlayersSize.toDouble() / matchGroupSize.toDouble()).toInt()
-        val highSkilledMatchesSize = ceil(highSkilledPlayersSize.toDouble() / matchGroupSize.toDouble()).toInt()
-
-        createMatchesForRank(lowSkilledMatchesSize, Rank.LOW)
-        createMatchesForRank(middleSkilledMatchesSize, Rank.MIDDLE)
-        createMatchesForRank(highSkilledMatchesSize, Rank.HIGH)
+        runBlocking {
+            fillingMatchesUseCase.assemble(FillingMatchesRequest(playerInSearch))
+            playerInSearch.clear()
+        }
     }
 
-    private fun createMatchesForRank(size: Int, rank: Rank) {
-        repeat(size) {
-            val match = Match(
-                rank = rank
-            )
-            logger.info { "Match created for rank: $rank" }
-            matchRepository.save(match)
-        }
+    @KafkaListener(topics = ["fill_matches"], groupId = "matchmaker")
+    fun listenGroupFoo(message: String) {
+        val player: Player = objectMapper.readValue(message)
+        playerInSearch.add(player)
     }
 }

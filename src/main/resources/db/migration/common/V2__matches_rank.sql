@@ -1,1 +1,1 @@
-alter table matches add column rank varchar(16);
+alter table matches add column rank smallint;

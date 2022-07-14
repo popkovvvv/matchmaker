@@ -7,6 +7,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
 plugins {
     id("org.springframework.boot") version "2.7.1"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("io.gatling.gradle") version "3.7.5"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
     kotlin("jvm") version "1.6.21"
     kotlin("plugin.spring") version "1.6.21"
@@ -75,6 +76,10 @@ dependencies {
     testImplementation("io.mockk:mockk:1.12.4")
     testImplementation("com.ninja-squad:springmockk:3.1.1")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+
+    gatling("org.postgresql:postgresql")
+    gatling("com.google.code.gson:gson:2.8.6")
+    gatling("io.github.serpro69:kotlin-faker:1.12.0-rc.0")
 }
 
 dependencyManagement {

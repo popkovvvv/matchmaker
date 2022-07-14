@@ -35,20 +35,20 @@ class FindMatchUseCase(
             val matchFoundingStepOne = matchFoundingStepOne(player, matches)
             if (matchFoundingStepOne != null) {
                 val match = addPlayerToMatch(player, matchFoundingStepOne)
-                FindMatchResponse.Success(match)
+                return FindMatchResponse.Success(match)
             }
 
             val matchFoundingStepTwo = matchFoundingStepTwo(player, matches)
             if (matchFoundingStepTwo != null) {
                 val match = addPlayerToMatch(player, matchFoundingStepTwo)
-                FindMatchResponse.Success(match)
+                return FindMatchResponse.Success(match)
             }
 
             if (player.state.priority) {
                 val matchFoundingWithPriority = matchFoundingWithPriority(player, matches)
                 if (matchFoundingWithPriority != null) {
                     val match = addPlayerToMatch(player, matchFoundingWithPriority)
-                    FindMatchResponse.Success(match)
+                    return FindMatchResponse.Success(match)
                 }
             }
 
@@ -78,9 +78,9 @@ class FindMatchUseCase(
     }
 
     private fun addPlayerToMatch(player: Player, match: Match): Match {
+        match.addPlayer(player)
         player.startedSearchAt = null
         player.state = State(inGame = true)
-        match.addPlayer(player)
         playerRepository.save(player)
         return match
     }

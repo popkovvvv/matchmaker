@@ -16,7 +16,7 @@ class Player(
     val skill: Double,
     val latency: Double,
     var startedSearchAt: DateTime? = null,
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     @Type(type = "jsonb") @Column(columnDefinition = "jsonb") var state: State = State(),
     var rank: Rank
 ) {

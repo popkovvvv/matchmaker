@@ -18,13 +18,12 @@ class PlayerLongerSearchSchedule(
     override fun run() {
         val players = playerRepository.findLongestSearchMatchPlayers(ttlSeconds)
         players.forEach { player ->
-            val updatedPlayer = player
-            updatedPlayer.state = player.state.copy(
+            player.state = player.state.copy(
                 priority = true
             )
-            playerRepository.save(updatedPlayer)
+            playerRepository.save(player)
         }
-        val playersNames = players.map { it.name }.joinToString { "," }
+        val playersNames = players.map { it.name }.joinToString()
         logger.info {
             "players with long search: $playersNames"
         }

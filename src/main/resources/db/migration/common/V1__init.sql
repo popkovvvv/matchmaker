@@ -6,7 +6,7 @@ create table players
     latency           double precision      not null,
     started_search_at timestamp with time zone,
     state             jsonb                 not null default '{}',
-    rank              smallint           not null
+    rank              smallint              not null
 );
 
 create unique index players_name_unique_idx ON players (name);
@@ -17,7 +17,6 @@ create table matches
     skill_statistics  jsonb                 not null default '{}',
     latency_statistic jsonb                 not null default '{}',
     time_statistic    jsonb                 not null default '{}',
-    occupancy         double precision      not null,
     started_at        timestamp with time zone
 );
 

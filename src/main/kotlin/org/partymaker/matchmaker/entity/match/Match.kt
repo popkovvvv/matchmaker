@@ -4,8 +4,7 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import org.joda.time.DateTime
-import org.joda.time.Instant
-import org.joda.time.Interval
+import org.joda.time.Seconds
 import org.partymaker.matchmaker.entity.Rank
 import org.partymaker.matchmaker.entity.player.Player
 import java.lang.Double.min
@@ -27,8 +26,8 @@ class Match(
     @Type(type = "jsonb") @Column(columnDefinition = "jsonb") var skillStatistics: Statistic = Statistic(),
     @Type(type = "jsonb") @Column(columnDefinition = "jsonb") var latencyStatistic: Statistic = Statistic(),
     @Type(type = "jsonb") @Column(columnDefinition = "jsonb") var timeStatistic: TimeStatistic = TimeStatistic(),
-    val occupancy: Double = 0.0,
     var startedAt: DateTime? = null,
+    @Enumerated(EnumType.ORDINAL)
     var rank: Rank
 ) {
 
@@ -42,9 +41,10 @@ class Match(
             value = player.latency,
             avg = players.map { it.latency }.average()
         )
-        val durationMillis = Interval(player.startedSearchAt, Instant()).toDurationMillis()
+
+        val durationSeconds = Seconds.secondsBetween(player.startedSearchAt, DateTime.now()).seconds
         timeStatistic = timeStatistic.update(
-            durationMillis
+            durationSeconds
         )
     }
 
@@ -64,15 +64,15 @@ class Match(
         }
 
         data class TimeStatistic(
-            val min: Long? = null,
-            val max: Long? = null,
-            val avg: Long? = null
+            val min: Int? = null,
+            val max: Int? = null,
+            val avg: Int? = null
         ) {
 
-            fun update(value: Long) = TimeStatistic(
-                min = value,
-                max = value,
-                avg = value
+            fun update(value: Int) = TimeStatistic(
+                min = if (min != null && min < value) min else value,
+                max = if (max != null && max > value) max else value,
+                avg = if (min != null && max != null) (min + max) / 2 else null
             )
         }
     }
