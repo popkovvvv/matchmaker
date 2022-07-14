@@ -3,6 +3,8 @@
 ### Init database
 ```
 create database matchmaker encoding utf8;
+
+docker-compose up -d
 ```
 
 #### Set environment variables
@@ -13,14 +15,9 @@ set -a && source .env && set +a
 
 #### Start the Application
 
-With gradlew (without kafka, postgres)
+With gradlew
 ```
-./gradlew bootRun --args='--spring.profiles.active=common' -Duser.language=en -Duser.timezone=UTC
-```
-
-With docker-compose
-```
-docker-compose up
+./gradlew bootRun --args='--spring.profiles.active=common,dev' -Duser.language=en -Duser.timezone=UTC
 ```
 
 Or just run

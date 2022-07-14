@@ -1,0 +1,1 @@
+update players set state = state || '{ "priority": false }'::jsonb;

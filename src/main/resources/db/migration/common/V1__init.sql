@@ -6,7 +6,7 @@ create table players
     latency           double precision      not null,
     started_search_at timestamp with time zone,
     state             jsonb                 not null default '{}',
-    rank              varchar(16)           not null
+    rank              smallint           not null
 );
 
 create unique index players_name_unique_idx ON players (name);

@@ -1,63 +1,56 @@
 package org.partymaker.matchmaker.service.usecase
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.joda.time.DateTime
 import org.partymaker.matchmaker.common.calculateRank
 import org.partymaker.matchmaker.common.io
 import org.partymaker.matchmaker.entity.player.Player
 import org.partymaker.matchmaker.entity.player.PlayerRepository
-import org.springframework.kafka.core.KafkaTemplate
+import org.partymaker.matchmaker.service.usecase.AddPlayerToMatchMakingResponse.*
 import org.springframework.stereotype.Service
 
-data class StartGameRequest(
+data class AddPlayerToMatchMakingRequest(
     val name: String,
     val skill: Double,
     val latency: Double
 )
 
-sealed class StartGameResponse {
+sealed class AddPlayerToMatchMakingResponse {
 
-    object Success : StartGameResponse()
+    object Success : AddPlayerToMatchMakingResponse()
 
     data class PlayerInGame(
         val message: String,
-    ) : StartGameResponse()
+    ) : AddPlayerToMatchMakingResponse()
 
     data class PlayerAlreadySearch(
         val message: String,
-    ) : StartGameResponse()
+    ) : AddPlayerToMatchMakingResponse()
 }
 
 @Service
-class StartGameUseCase(
-    val kafkaTemplate: KafkaTemplate<String, String>,
-    val objectMapper: ObjectMapper,
+class AddPlayerToMatchMakingUseCase(
     val playerRepository: PlayerRepository,
-) : UseCase<StartGameRequest, StartGameResponse> {
+) : UseCase<AddPlayerToMatchMakingRequest, AddPlayerToMatchMakingResponse> {
 
-    override suspend fun assemble(request: StartGameRequest): StartGameResponse = io {
+    override suspend fun assemble(request: AddPlayerToMatchMakingRequest): AddPlayerToMatchMakingResponse = io {
         val player = playerRepository.findPlayerByName(request.name) ?: Player(
             name = request.name,
             skill = request.skill,
             latency = request.latency,
-            state = Player.Companion.State(),
             rank = request.skill.calculateRank()
         )
 
-        if (player.state.inGame) return@io StartGameResponse.PlayerInGame(
+        if (player.state.inGame) return@io PlayerInGame(
             "Player with name: ${player.name} already in game"
         )
 
-        if (player.startedSearchAt != null) return@io StartGameResponse.PlayerAlreadySearch(
+        if (player.startedSearchAt != null) return@io PlayerAlreadySearch(
             message = "Player with name: ${player.name} already search game"
         )
 
         player.startedSearchAt = DateTime.now()
-
         playerRepository.save(player)
 
-        kafkaTemplate.send("players", objectMapper.writeValueAsString(player))
-
-        StartGameResponse.Success
+        Success
     }
 }

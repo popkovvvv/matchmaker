@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MatchmakerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="common" />
+    <option name="ACTIVE_PROFILES" value="common,dev" />
     <module name="matchmaker.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="org.partymaker.matchmaker.MatchmakerApplication" />
     <extension name="net.ashald.envfile">

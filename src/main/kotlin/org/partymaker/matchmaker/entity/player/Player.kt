@@ -16,14 +16,16 @@ class Player(
     val skill: Double,
     val latency: Double,
     var startedSearchAt: DateTime? = null,
-    @Type(type = "jsonb") @Column(columnDefinition = "jsonb") var state: State,
+    @Enumerated(EnumType.STRING)
+    @Type(type = "jsonb") @Column(columnDefinition = "jsonb") var state: State = State(),
     var rank: Rank
 ) {
 
     companion object {
 
         data class State(
-            val inGame: Boolean = false
+            val inGame: Boolean = false,
+            val priority: Boolean = false
         )
     }
 }

@@ -1,7 +1,11 @@
 package org.partymaker.matchmaker.service.usecase
 
+import org.partymaker.matchmaker.common.downGrade
+import org.partymaker.matchmaker.common.upGrade
+import org.partymaker.matchmaker.entity.Rank
 import org.partymaker.matchmaker.entity.match.Match
 import org.partymaker.matchmaker.entity.player.Player
+import org.partymaker.matchmaker.entity.player.Player.Companion.State
 import org.partymaker.matchmaker.entity.player.PlayerRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -11,9 +15,14 @@ data class FindMatchRequest(
     val matches: List<Match>
 )
 
-data class FindMatchResponse(
-    val match: Match
-)
+sealed class FindMatchResponse {
+
+    data class Success(
+        val match: Match
+    ) : FindMatchResponse()
+
+    object MatchNotFounded : FindMatchResponse()
+}
 
 @Service
 class FindMatchUseCase(
@@ -26,41 +35,51 @@ class FindMatchUseCase(
             val matchFoundingStepOne = matchFoundingStepOne(player, matches)
             if (matchFoundingStepOne != null) {
                 val match = addPlayerToMatch(player, matchFoundingStepOne)
-                FindMatchResponse(match)
+                FindMatchResponse.Success(match)
             }
 
             val matchFoundingStepTwo = matchFoundingStepTwo(player, matches)
             if (matchFoundingStepTwo != null) {
                 val match = addPlayerToMatch(player, matchFoundingStepTwo)
-                FindMatchResponse(match)
+                FindMatchResponse.Success(match)
             }
 
-            val newMatch = Match(
-                rank = player.rank
-            )
+            if (player.state.priority) {
+                val matchFoundingWithPriority = matchFoundingWithPriority(player, matches)
+                if (matchFoundingWithPriority != null) {
+                    val match = addPlayerToMatch(player, matchFoundingWithPriority)
+                    FindMatchResponse.Success(match)
+                }
+            }
 
-            val match = addPlayerToMatch(player, newMatch)
-            FindMatchResponse(match)
+            FindMatchResponse.MatchNotFounded
         }
     }
 
     private fun matchFoundingStepOne(player: Player, matches: List<Match>): Match? {
         return matches.find {
             it.rank == player.rank ||
-                ((it.skillStatistics.min - rankBorderLine) <= player.skill && (it.skillStatistics.max + rankBorderLine) <= player.skill)
+                (it.skillStatistics.min - rankBorderLine) <= player.skill &&
+                (it.skillStatistics.max + rankBorderLine) >= player.skill
         }
     }
 
     private fun matchFoundingStepTwo(player: Player, matches: List<Match>): Match? {
         return matches.find {
             ((it.skillStatistics.min - rankBorderLine) - rankBorderLine) <= player.skill &&
-                ((it.skillStatistics.max + rankBorderLine) + rankBorderLine) <= player.skill
+                ((it.skillStatistics.max + rankBorderLine) + rankBorderLine) >= player.skill
+        }
+    }
+
+    private fun matchFoundingWithPriority(player: Player, matches: List<Match>): Match? {
+        return matches.find {
+            player.rank.downGrade() == it.rank || player.rank.upGrade() == it.rank
         }
     }
 
     private fun addPlayerToMatch(player: Player, match: Match): Match {
         player.startedSearchAt = null
-        player.state = Player.Companion.State(inGame = true)
+        player.state = State(inGame = true)
         match.addPlayer(player)
         playerRepository.save(player)
         return match
