@@ -1,6 +1,5 @@
 package org.partymaker.matchmaker.entity.player
 
-import org.joda.time.DateTime
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param

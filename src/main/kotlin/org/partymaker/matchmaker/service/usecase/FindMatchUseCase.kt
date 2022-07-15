@@ -2,7 +2,6 @@ package org.partymaker.matchmaker.service.usecase
 
 import org.partymaker.matchmaker.common.downGrade
 import org.partymaker.matchmaker.common.upGrade
-import org.partymaker.matchmaker.entity.Rank
 import org.partymaker.matchmaker.entity.match.Match
 import org.partymaker.matchmaker.entity.player.Player
 import org.partymaker.matchmaker.entity.player.Player.Companion.State

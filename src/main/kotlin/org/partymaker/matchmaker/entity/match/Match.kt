@@ -72,7 +72,7 @@ class Match(
             fun update(value: Int) = TimeStatistic(
                 min = if (min != null && min < value) min else value,
                 max = if (max != null && max > value) max else value,
-                avg = if (min != null && max != null) (min + max) / 2 else null
+                avg = if (min != null && max != null) (min + max) / 2 else value
             )
         }
     }

@@ -7,7 +7,6 @@ import io.gatling.javaapi.core.CoreDsl.exec
 import io.gatling.javaapi.http.HttpDsl.http
 import io.gatling.javaapi.http.HttpDsl.status
 import io.github.serpro69.kfaker.Faker
-import kotlin.random.Random
 
 object Request {
 
