@@ -23,7 +23,7 @@ class PlayerLongerSearchSchedule(
             )
             playerRepository.save(player)
         }
-        val playersNames = players.map { it.name }.joinToString()
+        val playersNames = players.joinToString { it.name }
         logger.info {
             "players with long search: $playersNames"
         }
