@@ -17,6 +17,7 @@ create table matches
     skill_statistics  jsonb                 not null default '{}',
     latency_statistic jsonb                 not null default '{}',
     time_statistic    jsonb                 not null default '{}',
+    created_at        timestamp with time zone,
     started_at        timestamp with time zone
 );
 

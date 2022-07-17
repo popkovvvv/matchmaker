@@ -8,14 +8,13 @@ import playmaker.partymaker.matchmaker.simulations.findMatch.Scenario.scn
 
 class FindMatchSimulation : Simulation() {
 
-    private val injectionStep = constantUsersPerSec(5.0).during(20)
+    private val injectionStep = constantUsersPerSec(10.0).during(60)
 
     init {
         setUp(scn().injectOpen(injectionStep).protocols(httpProtocol))
-            .maxDuration(20)
+            .maxDuration(60)
             .assertions(
                 global().failedRequests().count().`is`(0),
-                global().requestsPerSec().gte(20.0)
             )
     }
 

@@ -25,7 +25,8 @@ class Player(
 
         data class State(
             val inGame: Boolean = false,
-            val priority: Boolean = false
+            val priority: Boolean = false,
+            var findGameAttempts: Int = 0
         )
     }
 }

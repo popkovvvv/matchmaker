@@ -26,10 +26,14 @@ class Match(
     @Type(type = "jsonb") @Column(columnDefinition = "jsonb") var skillStatistics: Statistic = Statistic(),
     @Type(type = "jsonb") @Column(columnDefinition = "jsonb") var latencyStatistic: Statistic = Statistic(),
     @Type(type = "jsonb") @Column(columnDefinition = "jsonb") var timeStatistic: TimeStatistic = TimeStatistic(),
+    @Type(type = "jsonb") @Column(columnDefinition = "jsonb") var conditions: Conditions? = null,
+    var createdAt: DateTime? = null,
     var startedAt: DateTime? = null,
     @Enumerated(EnumType.ORDINAL)
     var rank: Rank
 ) {
+
+    fun canAddPlayer(matchGroupSize: Int): Boolean = players.size < matchGroupSize
 
     fun addPlayer(player: Player) {
         players = players + player
@@ -75,5 +79,15 @@ class Match(
                 avg = if (min != null && max != null) (min + max) / 2 else value
             )
         }
+
+        data class Conditions(
+            val skillCondition: Condition,
+            val latencyCondition: Condition
+        )
+
+        data class Condition(
+            val min: Double,
+            val max: Double
+        )
     }
 }

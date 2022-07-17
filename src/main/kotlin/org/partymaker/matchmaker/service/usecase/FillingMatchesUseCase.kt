@@ -1,5 +1,6 @@
 package org.partymaker.matchmaker.service.usecase
 
+import org.joda.time.DateTime
 import org.partymaker.matchmaker.common.io
 import org.partymaker.matchmaker.entity.Rank
 import org.partymaker.matchmaker.entity.match.Match
@@ -54,7 +55,7 @@ class FillingMatchesUseCase(
     private fun createMatchesForRank(size: Int, rank: Rank): List<Match> {
         val matches = mutableListOf<Match>()
         for (i in 1..size) {
-            matches.add(Match(rank = rank))
+            matches.add(Match(rank = rank, createdAt = DateTime.now()))
         }
         return matches
     }

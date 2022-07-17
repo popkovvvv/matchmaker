@@ -25,16 +25,4 @@ interface PlayerRepository : CrudRepository<Player, Long> {
         nativeQuery = true
     )
     fun findSearchMatchPlayers(): List<Player>
-
-    @Query(
-        """
-            select *
-            from players p
-            where p.started_search_at is not null
-             and cast(p.state->>'inGame' as boolean) = false
-             and p.started_search_at + (:ttl * interval '1 second') < now()
-        """,
-        nativeQuery = true
-    )
-    fun findLongestSearchMatchPlayers(ttl: Int): List<Player>
 }
