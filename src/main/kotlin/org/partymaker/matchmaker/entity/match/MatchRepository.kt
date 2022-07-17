@@ -2,7 +2,6 @@ package org.partymaker.matchmaker.entity.match
 
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
-import org.springframework.data.repository.query.Param
 
 interface MatchRepository : CrudRepository<Match, Long> {
 
@@ -10,8 +9,19 @@ interface MatchRepository : CrudRepository<Match, Long> {
         """
             select m
             from Match m
-            where m.players.size < :groupSize and m.startedAt is null
+            where m.startedAt is null
         """
     )
-    fun findNotStartedMatches(@Param("groupSize") groupSize: Int): List<Match>
+    fun findNotStartedMatches(): List<Match>
+
+    @Query(
+        """
+            select *
+            from matches m
+            where m.created_at < (now() - (:ttl * interval '1 second'))
+            and m.started_at is null
+        """,
+        nativeQuery = true
+    )
+    fun findMatchesOlderWhen(ttl: Int): List<Match>
 }

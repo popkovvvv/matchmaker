@@ -44,7 +44,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.kafka:spring-kafka")
     implementation("org.jadira.usertype:usertype.core:7.0.0.CR1")
     implementation("org.hibernate:hibernate-spatial:5.6.0.Final")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -76,6 +75,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.12.4")
     testImplementation("com.ninja-squad:springmockk:3.1.1")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation("io.github.serpro69:kotlin-faker:1.12.0-rc.0")
 
     gatling("org.postgresql:postgresql")
     gatling("com.google.code.gson:gson:2.8.6")

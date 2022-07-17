@@ -1,0 +1,1 @@
+update players set state = state || '{ "maxFindGameAttempts": 0 }'::jsonb || '{ "priority": false }'::jsonb;
