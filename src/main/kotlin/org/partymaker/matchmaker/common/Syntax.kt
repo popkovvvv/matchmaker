@@ -16,15 +16,3 @@ fun Double.calculateRank(): Rank = if (this <= 50.0) {
 } else if (this <= 150.0) {
     Rank.MIDDLE
 } else Rank.HIGH
-
-fun Rank.downGrade(): Rank = when (this) {
-    Rank.HIGH -> Rank.MIDDLE
-    Rank.MIDDLE -> Rank.LOW
-    Rank.LOW -> Rank.LOW
-}
-
-fun Rank.upGrade(): Rank = when (this) {
-    Rank.LOW -> Rank.MIDDLE
-    Rank.MIDDLE -> Rank.HIGH
-    Rank.HIGH -> Rank.HIGH
-}
